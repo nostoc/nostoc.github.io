@@ -427,43 +427,6 @@ img {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  cursor: none;
-}
-
-/* ── Scramble animation character states ── */
-.scramble-char {
-  display: inline-block;
-  position: relative;
-  transition: text-shadow 0.15s ease;
-}
-
-/* While cycling through random glyphs — glow in accent amber */
-.scramble-char.scrambling {
-  -webkit-text-fill-color: var(--c-400);
-  text-shadow:
-    0 0 8px rgba(188, 138, 95, 0.9),
-    0 0 20px rgba(212, 162, 118, 0.5);
-}
-
-/* Once locked in — restore the parchment gradient */
-.scramble-char.settled {
-  -webkit-text-fill-color: transparent;
-  text-shadow: none;
-  animation: settle-pop 0.18s ease-out forwards;
-}
-
-@keyframes settle-pop {
-  0% {
-    transform: scale(1.18);
-  }
-
-  60% {
-    transform: scale(0.96);
-  }
-
-  100% {
-    transform: scale(1);
-  }
 }
 
 .hero-typewriter {
