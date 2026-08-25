@@ -368,4 +368,78 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ══════════════════════════════════════════════
+     SCRAMBLE NAME ANIMATION — "hacker decode" 🖥️
+     Characters cycle through random glyphs before locking in,
+     left to right — like a password being cracked one digit at a time.
+  ══════════════════════════════════════════════ */
+  function initScramble() {
+    const nameEl = document.querySelector('.hero-name');
+    if (!nameEl) return;
+
+    const POOL_SCRAMBLE  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!?&%^*<>';
+    const SCRAMBLE_SPEED = 38;
+    const SETTLE_SPEED   = 32;
+    const SETTLE_ROUNDS  = 8;
+    const CHAR_STAGGER   = 82;
+    const INITIAL_DELAY  = 950;
+
+    const childNodes = [...nameEl.childNodes];
+    const items = [];
+
+    childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent.trim();
+        if (text) text.split('').forEach(ch => items.push({ type: 'char', ch }));
+      } else if (node.nodeName === 'BR') {
+        items.push({ type: 'br' });
+      }
+    });
+
+    nameEl.innerHTML = '';
+    const charSpans = [];
+
+    items.forEach(item => {
+      if (item.type === 'br') {
+        nameEl.appendChild(document.createElement('br'));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'scramble-char scrambling';
+        span.dataset.final = item.ch;
+        span.textContent = POOL_SCRAMBLE[Math.floor(Math.random() * POOL_SCRAMBLE.length)];
+        nameEl.appendChild(span);
+        charSpans.push(span);
+      }
+    });
+
+    const globalTimers = charSpans.map(span => {
+      return setInterval(() => {
+        if (span.classList.contains('scrambling')) {
+          span.textContent = POOL_SCRAMBLE[Math.floor(Math.random() * POOL_SCRAMBLE.length)];
+        }
+      }, SCRAMBLE_SPEED);
+    });
+
+    charSpans.forEach((span, i) => {
+      setTimeout(() => {
+        clearInterval(globalTimers[i]);
+        let count = 0;
+        const settleTimer = setInterval(() => {
+          count++;
+          if (count < SETTLE_ROUNDS) {
+            span.textContent = POOL_SCRAMBLE[Math.floor(Math.random() * POOL_SCRAMBLE.length)];
+          } else {
+            clearInterval(settleTimer);
+            span.textContent = span.dataset.final;
+            span.classList.remove('scrambling');
+            span.classList.add('settled');
+          }
+        }, SETTLE_SPEED);
+      }, INITIAL_DELAY + i * CHAR_STAGGER);
+    });
+  }
+
+  initScramble();
+  document.querySelector('.hero-name')?.addEventListener('click', () => { initScramble(); });
+
 });
